@@ -65,12 +65,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
            let image = NSImage(contentsOf: url) {
             image.size = NSSize(width: 18, height: 18)
             image.isTemplate = true
+            image.accessibilityDescription = "Middling"
             return image
         }
         return NSImage(
             systemSymbolName: "computermouse.fill",
             accessibilityDescription: "Middling"
         )
+    }
+
+    private func activate() {
+        if #available(macOS 14.0, *) {
+            NSApp.activate()
+        } else {
+            NSApp.activate(ignoringOtherApps: true)
+        }
     }
 
     private func terminateOtherInstances() {
@@ -227,7 +236,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             setupWindow = window
         }
         setupWindow?.makeKeyAndOrderFront(nil)
-        NSApp.activate(ignoringOtherApps: true)
+        activate()
     }
 
     // MARK: - Accessibility permission
@@ -296,7 +305,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             aboutWindow = window
         }
         aboutWindow?.makeKeyAndOrderFront(nil)
-        NSApp.activate(ignoringOtherApps: true)
+        activate()
     }
 
     @objc private func forceShowSetup() {

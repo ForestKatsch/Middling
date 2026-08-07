@@ -13,6 +13,8 @@ final class SetupModel: ObservableObject {
 struct SetupView: View {
     @ObservedObject var model: SetupModel
 
+    private static let width: CGFloat = 440
+
     var body: some View {
         VStack(spacing: 4) {
             Image(nsImage: NSApp.applicationIconImage)
@@ -27,40 +29,62 @@ struct SetupView: View {
                 .font(.title3)
                 .foregroundStyle(.secondary)
 
-            VStack(spacing: 14) {
+            ZStack {
                 if model.trusted {
-                    Toggle(
-                        "Launch at login",
-                        isOn: Binding(
-                            get: { model.launchAtLogin },
-                            set: { model.onToggleLaunchAtLogin($0) }
-                        )
-                    )
-                    .toggleStyle(.checkbox)
-
-                    PillButton("Done") { model.onDone() }
+                    grantedPage
+                        .transition(pageTransition)
                 } else {
-                    Text("Middling needs Accessibility access.")
-
-                    PillButton("Open System Settings…") { model.onOpenSettings() }
+                    needsAccessPage
+                        .transition(pageTransition)
                 }
-
-                Text("Turn Middling on in the list. "
-                    + "If it is already on, turn it off and back on.")
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .opacity(model.trusted ? 0 : 1)
             }
-            .padding(.top, 28)
+            .frame(maxWidth: .infinity)
+            .frame(height: 120)
+            .padding(.top, 16)
         }
         .padding(.horizontal, 40)
-        .padding(.bottom, 32)
-        .frame(width: 440)
-        .animation(.default, value: model.trusted)
+        .padding(.bottom, 20)
+        .frame(width: Self.width)
+        .animation(.easeInOut(duration: 0.35), value: model.trusted)
     }
 
+    private var pageTransition: AnyTransition {
+        .asymmetric(
+            insertion: .offset(x: Self.width / 2).combined(with: .opacity),
+            removal: .offset(x: -Self.width / 2).combined(with: .opacity)
+        )
+    }
+
+    private var needsAccessPage: some View {
+        VStack(spacing: 14) {
+            Text("Middling needs Accessibility access.")
+
+            PillButton("Open System Settings…") { model.onOpenSettings() }
+
+            Text("Turn Middling on in the list. "
+                + "If it is already on, turn it off and back on.")
+                .font(.caption)
+                .foregroundStyle(.tertiary)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var grantedPage: some View {
+        VStack(spacing: 14) {
+            Toggle(
+                "Launch at login",
+                isOn: Binding(
+                    get: { model.launchAtLogin },
+                    set: { model.onToggleLaunchAtLogin($0) }
+                )
+            )
+            .toggleStyle(.checkbox)
+
+            PillButton("Continue") { model.onDone() }
+                .keyboardShortcut(.defaultAction)
+        }
+    }
 }
 
 private struct PillButton: View {
