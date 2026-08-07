@@ -2,3 +2,13 @@
 dist/
 .DS_Store
 .claude/
+
+# Never commit key material or credentials.
+*.p12
+*.cer
+*.pem
+*.key
+*.certSigningRequest
+*.mobileprovision
+.env
+.env.*
