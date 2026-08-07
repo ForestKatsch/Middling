@@ -130,6 +130,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         aboutItem.target = self
         menu.addItem(aboutItem)
 
+        let forceSetupItem = NSMenuItem(
+            title: "Show Setup Window",
+            action: #selector(forceShowSetup),
+            keyEquivalent: ""
+        )
+        forceSetupItem.target = self
+        forceSetupItem.isAlternate = true
+        forceSetupItem.keyEquivalentModifierMask = .option
+        menu.addItem(forceSetupItem)
+
         menu.addItem(.separator())
 
         enabledMenuItem = NSMenuItem(
@@ -287,6 +297,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         aboutWindow?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    @objc private func forceShowSetup() {
+        // Testing aid: present the window in its first-launch state.
+        // Any menu open or poll tick refreshes the real state back.
+        setupModel.trusted = false
+        showSetupWindow()
     }
 
     @objc private func toggleEnabled() {
