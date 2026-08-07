@@ -27,12 +27,31 @@ struct SetupView: View {
                 .font(.title3)
                 .foregroundStyle(.secondary)
 
-            Group {
+            VStack(spacing: 14) {
                 if model.trusted {
-                    granted
+                    Toggle(
+                        "Launch at login",
+                        isOn: Binding(
+                            get: { model.launchAtLogin },
+                            set: { model.onToggleLaunchAtLogin($0) }
+                        )
+                    )
+                    .toggleStyle(.checkbox)
+
+                    PillButton("Done") { model.onDone() }
                 } else {
-                    needsAccess
+                    Text("Middling needs Accessibility access.")
+
+                    PillButton("Open System Settings…") { model.onOpenSettings() }
                 }
+
+                Text("Turn Middling on in the list. "
+                    + "If it is already on, turn it off and back on.")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .opacity(model.trusted ? 0 : 1)
             }
             .padding(.top, 28)
         }
@@ -42,39 +61,6 @@ struct SetupView: View {
         .animation(.default, value: model.trusted)
     }
 
-    private var needsAccess: some View {
-        VStack(spacing: 14) {
-            Text("Middling needs Accessibility access.")
-
-            PillButton("Open System Settings…") { model.onOpenSettings() }
-
-            Text("Turn Middling on in the list. If it is already on, "
-                + "turn it off and back on. This window updates automatically.")
-                .font(.caption)
-                .foregroundStyle(.tertiary)
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-    }
-
-    private var granted: some View {
-        VStack(spacing: 14) {
-            Label("Ready", systemImage: "checkmark.circle.fill")
-                .foregroundStyle(.green)
-                .font(.body.weight(.medium))
-
-            Toggle(
-                "Launch at login",
-                isOn: Binding(
-                    get: { model.launchAtLogin },
-                    set: { model.onToggleLaunchAtLogin($0) }
-                )
-            )
-            .toggleStyle(.checkbox)
-
-            PillButton("Done") { model.onDone() }
-        }
-    }
 }
 
 private struct PillButton: View {
