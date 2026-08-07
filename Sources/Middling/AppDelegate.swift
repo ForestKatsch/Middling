@@ -11,6 +11,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var permissionsMenuItem: NSMenuItem!
     private var launchAtLoginMenuItem: NSMenuItem!
     private var setupWindow: NSWindow?
+    private var aboutWindow: NSWindow?
     private var permissionPollTimer: Timer?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -241,8 +242,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Actions
 
     @objc private func showAbout() {
+        if aboutWindow == nil {
+            let hosting = NSHostingController(rootView: AboutView())
+            let window = NSWindow(contentViewController: hosting)
+            window.title = "About Middling"
+            window.styleMask = [.titled, .closable, .fullSizeContentView]
+            window.titleVisibility = .hidden
+            window.titlebarAppearsTransparent = true
+            window.standardWindowButton(.miniaturizeButton)?.isHidden = true
+            window.standardWindowButton(.zoomButton)?.isHidden = true
+            window.isMovableByWindowBackground = true
+            window.isReleasedWhenClosed = false
+            window.center()
+            aboutWindow = window
+        }
+        aboutWindow?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
-        NSApp.orderFrontStandardAboutPanel(nil)
     }
 
     @objc private func toggleEnabled() {
