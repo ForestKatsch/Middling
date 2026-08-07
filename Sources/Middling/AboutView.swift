@@ -28,6 +28,7 @@ struct AboutView: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
 
             Text(version)
                 .font(.caption)
