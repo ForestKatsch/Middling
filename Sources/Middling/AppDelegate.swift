@@ -16,6 +16,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         terminateOtherInstances()
+        setUpMainMenu()
         setUpStatusItem()
         setUpSetupModel()
 
@@ -79,6 +80,34 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         where app.processIdentifier != current {
             app.terminate()
         }
+    }
+
+    /// Invisible for an accessory app, but required for standard key
+    /// equivalents (Cmd-W, Cmd-Q) to work in our windows.
+    private func setUpMainMenu() {
+        let mainMenu = NSMenu()
+
+        let appMenuItem = NSMenuItem()
+        let appMenu = NSMenu()
+        appMenu.addItem(
+            withTitle: "Quit Middling",
+            action: #selector(NSApplication.terminate(_:)),
+            keyEquivalent: "q"
+        )
+        appMenuItem.submenu = appMenu
+        mainMenu.addItem(appMenuItem)
+
+        let windowMenuItem = NSMenuItem()
+        let windowMenu = NSMenu(title: "Window")
+        windowMenu.addItem(
+            withTitle: "Close Window",
+            action: #selector(NSWindow.performClose(_:)),
+            keyEquivalent: "w"
+        )
+        windowMenuItem.submenu = windowMenu
+        mainMenu.addItem(windowMenuItem)
+
+        NSApp.mainMenu = mainMenu
     }
 
     // MARK: - Status item
